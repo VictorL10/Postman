@@ -1,0 +1,321 @@
+{
+	"info": {
+		"_postman_id": "0f2f6fbf-111b-400b-8be9-28d6f40e118d",
+		"name": "Postman_HW_3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28646350"
+	},
+	"item": [
+		{
+			"name": "/login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//1. необходимо залогиниться\r",
+							"//Приходящий токен необходимо передать во все остальные запросы.\r",
+							"    pm.test(\"Token in environment\", function () {\r",
+							"    let resp = pm.response.json();\r",
+							"    pm.environment.set(\"token\", resp.token);\r",
+							"    });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/user_info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//1) Статус код 200\r",
+							"    pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    });\r",
+							"\r",
+							"\r",
+							"    \r",
+							"//2) Проверка структуры json в ответе.\r",
+							"    let SchemaJson = {\r",
+							"        \r",
+							"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\r",
+							"  \"title\": \"Generated schema for Root\",\r",
+							"  \"type\": \"object\",\r",
+							"  \"properties\": {\r",
+							"    \"person\": {\r",
+							"      \"type\": \"object\",\r",
+							"      \"properties\": {\r",
+							"        \"u_age\": {\r",
+							"          \"type\": \"number\"\r",
+							"        },\r",
+							"        \"u_name\": {\r",
+							"          \"type\": \"array\",\r",
+							"          \"items\": [\r",
+							"            {\r",
+							"              \"type\": \"string\"\r",
+							"            },\r",
+							"            {\r",
+							"              \"type\": \"number\"\r",
+							"            },\r",
+							"            {\r",
+							"              \"type\": \"number\"\r",
+							"            }\r",
+							"          ],\r",
+							"          \"additionalItems\": false\r",
+							"        },\r",
+							"        \"u_salary_1_5_year\": {\r",
+							"          \"type\": \"number\"\r",
+							"        }\r",
+							"      },\r",
+							"      \"required\": [\r",
+							"        \"u_age\",\r",
+							"        \"u_name\",\r",
+							"        \"u_salary_1_5_year\"\r",
+							"      ]\r",
+							"    },\r",
+							"    \"qa_salary_after_12_months\": {\r",
+							"      \"type\": \"number\"\r",
+							"    },\r",
+							"    \"qa_salary_after_6_months\": {\r",
+							"      \"type\": \"number\"\r",
+							"    },\r",
+							"    \"start_qa_salary\": {\r",
+							"      \"type\": \"number\"\r",
+							"    }\r",
+							"  },\r",
+							"  \"required\": [\r",
+							"    \"person\",\r",
+							"    \"qa_salary_after_12_months\",\r",
+							"    \"qa_salary_after_6_months\",\r",
+							"    \"start_qa_salary\"\r",
+							"  ]\r",
+							"    }\r",
+							"\r",
+							"    pm.test('Test Schema', function () {\r",
+							"    pm.response.to.have.jsonSchema(SchemaJson);\r",
+							"    });\r",
+							"\r",
+							"\r",
+							"    \r",
+							"//3)В ответе указаны коэффициенты умножения salary, напишите тесты по проверке правильности результата перемножения на коэффициент.   \r",
+							"\r",
+							"// \"qa_salary_after_6_months\": \"salary\" * 2,\r",
+							"// \"qa_salary_after_12_months\": \"salary\" * 2.9,\r",
+							"// \"u_salary_1.5_year\": \"salary\" * 4\r",
+							"\r",
+							"\r",
+							"    let Resp = pm.response.json()  \r",
+							"    let Salary = pm.environment.get(\"salary\")\r",
+							"    \r",
+							"    pm.test(\"qa_salary_after_6_months = salary * 2 \", function(){\r",
+							"    pm.expect(Resp.qa_salary_after_6_months).to.eql(Salary * 2)\r",
+							"    });\r",
+							"    //console.log(Resp.qa_salary_after_6_months)\r",
+							"    //console.log(Salary * 2)\r",
+							"         \r",
+							"\r",
+							"    pm.test(\"qa_salary_after_12_months = salary * 2.9 \", function(){\r",
+							"    pm.expect(Resp.qa_salary_after_12_months).to.eql(Salary * 2.9)\r",
+							"    });\r",
+							"    //console.log(Resp.qa_salary_after_12_months)\r",
+							"    //console.log(Salary * 2.9)\r",
+							"\r",
+							"\r",
+							"    pm.test(\"u_salary_1.5_year = salary * 2.9 \", function(){\r",
+							"    pm.expect(Resp.person.u_salary_1_5_year).to.eql(Salary * 4)\r",
+							"    });\r",
+							"    console.log(Resp.person.u_salary_1_5_year)\r",
+							"    console.log(Salary * 4)\r",
+							"\r",
+							"\r",
+							"\r",
+							"//4) Достать значение из поля 'u_salary_1.5_year' и передать в поле salary запроса {{url}}/get_test_user\r",
+							"    pm.test(\"u_salary_1.5_year' to the salary field\", function () {\r",
+							"    pm.environment.set(\"Envir_Salary\", Resp.person.u_salary_1_5_year);\r",
+							"    });\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"age\": 32,\r\n    \"salary\": 1000,\r\n    \"name\": \"Victor\",\r\n    \"auth_token\": \"{{token}}\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/user_info",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"user_info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/new_data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//1) Статус код 200\r",
+							"    pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    });\r",
+							"\r",
+							"\r",
+							"    \r",
+							"//2) Проверка структуры json в ответе.\r",
+							"    let SchemaJson = {\r",
+							"  \r",
+							"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\r",
+							"  \"title\": \"Generated schema for Root\",\r",
+							"  \"type\": \"object\",\r",
+							"  \"properties\": {\r",
+							"    \"age\": {\r",
+							"      \"type\": \"number\"\r",
+							"    },\r",
+							"    \"name\": {\r",
+							"      \"type\": \"string\"\r",
+							"    },\r",
+							"    \"salary\": {\r",
+							"      \"type\": \"array\",\r",
+							"      \"items\": [\r",
+							"        {\r",
+							"          \"type\": \"number\"\r",
+							"        },\r",
+							"        {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        {\r",
+							"          \"type\": \"string\"\r",
+							"        }\r",
+							"      ],\r",
+							"      \"additionalItems\": false\r",
+							"    }\r",
+							"  },\r",
+							"  \"required\": [\r",
+							"    \"age\",\r",
+							"    \"name\",\r",
+							"    \"salary\"\r",
+							"  ]\r",
+							"}\r",
+							"\r",
+							"    pm.test('Test Schema', function () {\r",
+							"    pm.response.to.have.jsonSchema(SchemaJson);\r",
+							"    });\r",
+							"\r",
+							"\r",
+							"//3)В ответе указаны коэффициенты умножения salary, напишите тесты по проверке правильности результата перемножения на коэффициент.\r",
+							"//Resp.\r",
+							"//\"salary\": [salary, str(salary*2), str(salary*3)]}\r",
+							"\r",
+							"    let Resp = pm.response.json();\r",
+							"\r",
+							"    pm.test(\"result of multiplication salary by coefficient * 2\", function () {\r",
+							"    pm.expect(+Resp.salary[1]).to.eql(request.data.salary*2);\r",
+							"    });\r",
+							"    //console.log(request.data.salary*2)\r",
+							"    //console.log(+Resp.salary[1])\r",
+							"\r",
+							"\r",
+							"    pm.test(\"result of multiplication salary by coefficient * 3\", function () {\r",
+							"    pm.expect(+Resp.salary[2]).to.eql(request.data.salary*3);\r",
+							"    });\r",
+							"    //console.log(request.data.salary*3)\r",
+							"    //console.log(+Resp.salary[2])\r",
+							"\r",
+							"\r",
+							"\r",
+							"//4) проверить, что 2-й элемент массива salary больше 1-го и 0-го\r",
+							"\r",
+							"    "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "age",
+							"value": "{{age}}",
+							"type": "text"
+						},
+						{
+							"key": "salary",
+							"value": "{{salary}}",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "{{name}}",
+							"type": "text"
+						},
+						{
+							"key": "auth_token",
+							"value": "{{token}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/new_data",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"new_data"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "Token",
+			"value": ""
+		}
+	]
+}
